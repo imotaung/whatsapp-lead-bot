@@ -1,0 +1,29 @@
+import os
+import logging
+from dotenv import load_dotenv
+
+load_dotenv()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_WHATSAPP_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
+
+GOOGLE_SHEETS_CREDENTIALS_PATH = os.getenv("GOOGLE_SHEETS_CREDENTIALS_PATH")
+GOOGLE_CREDENTIALS_JSON = os.getenv("GOOGLE_CREDENTIALS_JSON")
+GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")
+
+CALENDLY_BOOKING_URL = os.getenv("CALENDLY_BOOKING_URL")
+
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+NOTIFICATION_EMAIL = os.getenv("NOTIFICATION_EMAIL")
+
+RATE_LIMIT_REQUESTS = int(os.getenv("RATE_LIMIT_REQUESTS", "3"))
+RATE_LIMIT_PERIOD_SECONDS = int(os.getenv("RATE_LIMIT_PERIOD_SECONDS", "600"))
+
+if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN or not TWILIO_WHATSAPP_NUMBER or not GOOGLE_SHEET_ID or not CALENDLY_BOOKING_URL or not RESEND_API_KEY or not NOTIFICATION_EMAIL:
+    raise ValueError("Missing required environment variables")
+if not GOOGLE_SHEETS_CREDENTIALS_PATH and not GOOGLE_CREDENTIALS_JSON:
+    raise ValueError("Need either GOOGLE_SHEETS_CREDENTIALS_PATH or GOOGLE_CREDENTIALS_JSON")

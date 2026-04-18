@@ -1,0 +1,14 @@
+# Environment variables
+.env
+*.env
+
+# Service account JSON
+*.json
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Logs
+*.log
