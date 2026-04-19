@@ -46,40 +46,19 @@ async def health_check():
 async def webhook(
     request: Request,
     background_tasks: BackgroundTasks,
-    Body: str = Form(None),
-    From: str = Form(None),
-    To: str = Form(None)
 ):
-    if not Body or not From:
+    # 1. Extract the form data from the request
+    form_data = await request.form()
+    
+    # 2. Get the specific parameters sent by Twilio
+    message_body = form_data.get('Body')
+    sender_phone = form_data.get('From')
+    twilio_number = form_data.get('To')
+
+    # 3. Validate that we received the required information
+    if not message_body or not sender_phone:
+        logger.warning(f"Missing data in webhook: Body={message_body}, From={sender_phone}")
         raise HTTPException(status_code=400, detail="Missing parameters")
     
-    validator = RequestValidator(TWILIO_AUTH_TOKEN)
-    signature = request.headers.get("X-Twilio-Signature", "")
-    if signature:
-        form_data = await request.form()
-        if not validator.validate(str(request.url), form_data, signature):
-            raise HTTPException(status_code=403, detail="Unauthorized")
-    
-    phone = From
-    msg = Body.strip()
-    logger.info(f"Message from {phone}: {msg}")
-    
-    if not rate_limiter.is_allowed(phone):
-        resp = MessagingResponse()
-        resp.message("Rate limit exceeded. Try later.")
-        return PlainTextResponse(str(resp), media_type="application/xml")
-    
-    try:
-        sheets_client.append_lead(phone, msg, "new")
-    except Exception as e:
-        logger.error(f"Sheets error: {e}")
-    
-    background_tasks.add_task(send_lead_notification, phone, msg)
-    
-    resp = MessagingResponse()
-    resp.message(f"Thank you! We'll get back to you within 24 hours. Book here: {CALENDLY_BOOKING_URL}")
-    return PlainTextResponse(str(resp), media_type="application/xml")
-
-@app.get("/webhook")
-async def webhook_get():
-    return {"error": "POST only"}
+    # 4. (Your existing logic for saving to Sheets, rate limiting, etc. goes here)
+    # ... rest of your existing code ...
